@@ -1,0 +1,15 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://dtw1y5f6fb8vt"
+valid=false
+
+[deps]
+
+source_file="res://data/export/stats_economie.csv"
+
+[params]
+
+compress=true
+delimiter=0

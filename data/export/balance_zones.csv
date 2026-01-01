@@ -1,0 +1,5 @@
+ID;Zone;Vagues_Total;Difficulte_Base;Multiplicateur_HP;Multiplicateur_ATK;Multiplicateur_XP;Multiplicateur_Gold;Notes;Statut;Zone_ID
+ZONE_FORET_001;Forêt;30;1;1.00;1.00;1.00;1.00;Zone d’apprentissage;🔵 À FAIRE;ZONE_FORET_001
+ZONE_CAVERNE_001;Caverne;30;2;1.25;1.15;1.15;1.10;Plus tank / zone control;🔵 À FAIRE;ZONE_CAVERNE_001
+ZONE_CIEL_001;Ciel;30;3;1.45;1.30;1.30;1.20;Plus rapide / patterns exigeants;🔵 À FAIRE;ZONE_CIEL_001
+ZONE_SOMMET_FINAL_001;Sommet;30;4;1.70;1.45;1.50;1.35;Endgame, pression constante;🔵 À FAIRE;ZONE_SOMMET_FINAL_001

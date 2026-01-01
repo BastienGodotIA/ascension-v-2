@@ -1,0 +1,13 @@
+ID;Paramètre;Valeur;Valeur_Type;Description;Statut
+LVL_RULE_001;Level max;100;INT;Cap de niveau (modifiable);🔵 À FAIRE
+LVL_RULE_002;XP base niveau 1;100;INT;XP pour passer du niveau 1 au 2;🔵 À FAIRE
+LVL_RULE_003;Multiplicateur progression XP;1,15;FLOAT;XP_next = XP_base * (mult ^ (level-1));🔵 À FAIRE
+LVL_RULE_004;HP par niveau;5;INT;Bonus HP max à chaque niveau;🔵 À FAIRE
+LVL_RULE_005;ATT par niveau;1;INT;Bonus attaque à chaque niveau;🔵 À FAIRE
+LVL_RULE_006;DEF par niveau;1;INT;Bonus défense à chaque niveau;🔵 À FAIRE
+LVL_RULE_007;SPEED par niveau;0,2;FLOAT;Bonus vitesse (auto-move horizontal);🔵 À FAIRE
+LVL_RULE_008;ATK SPD par niveau;0,005;FLOAT;Bonus vitesse d’attaque (pourcentage);🔵 À FAIRE
+LVL_RULE_009;CRIT% par niveau;0,002;FLOAT;Bonus chance critique (cap conseillé plus bas);🔵 À FAIRE
+LVL_RULE_010;Cap CRIT%;0,3;FLOAT;Pour éviter le 100% crit en endgame;🔵 À FAIRE
+LVL_RULE_011;CRIT DMG base;1,5;FLOAT;CritDamage initial;🔵 À FAIRE
+LVL_RULE_012;CRIT DMG par palier;+10% / 10 niveaux;TEXT;Bonus dégâts crit toutes les 10 montées;🔵 À FAIRE

@@ -1,0 +1,5 @@
+ID;Nom;Type;Description;Statut
+ZONE_FORET_001;Forêt;Zone;Zone de départ, apprentissage des mécaniques;🔵 À FAIRE
+ZONE_CAVERNE_001;Caverne;Zone;Difficulté intermédiaire, ennemis résistants;🔵 À FAIRE
+ZONE_CIEL_001;Ciel;Zone;Difficulté élevée, ennemis rapides et aériens;🔵 À FAIRE
+ZONE_SOMMET_FINAL_001;Sommet;Zone finale;Boss final et fin du jeu;🔵 À FAIRE

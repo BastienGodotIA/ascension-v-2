@@ -1,0 +1,14 @@
+ID;Zone;Nom;Role;HP;ATK;DEF;Vitesse;Atk_Speed;Crit%;Degats_Crit;Gold_drop;XP_drop;Spawn_Wave_Min;Spawn_Wave_Max;Notes;Statut;Zone_ID
+ENEMY_SLIME_BASIC_001;Forêt;Slime;Base;40;6;0;1.0;1.0;0;1,5;2;8;1;30;Ennemi d’introduction, sert de référence;🔵 À FAIRE;ZONE_FORET_001
+ENEMY_SLIME_ELITE_001;Forêt;Slime Élite;Élite;80;10;2;0.9;0.9;0;1,5;5;18;5;30;Version tanky, pression durable;🔵 À FAIRE;ZONE_FORET_001
+ENEMY_GUARDIAN_FORET_001;Forêt;Gardien Forêt;Mini-boss;220;16;5;0.8;0.8;0;1,5;15;45;30;30;Gardien vague 30;🔵 À FAIRE;ZONE_FORET_001
+ENEMY_BOSS_FORET_001;Forêt;Boss Forêt;Boss;420;22;8;0.7;0.7;0,05;1,75;30;120;30;30;Boss principal de zone;🔵 À FAIRE;ZONE_FORET_001
+ENEMY_BAT_SWARM_001;Caverne;Nuée de Chauves-souris;Harcèlement;70;9;1;1.6;1.2;0;1,5;5;16;1;30;Difficile en pack, faible par unité;🔵 À FAIRE;ZONE_CAVERNE_001
+ENEMY_BEETLE_TANK_001;Caverne;Scarabée Carapace;Tank;140;12;4;0.8;0.7;0;1,5;7;24;4;30;Gros HP/DEF, pression au contact;🔵 À FAIRE;ZONE_CAVERNE_001
+ENEMY_SHROOM_SPORE_001;Caverne;Champignon Spores;Zone;90;10;2;0.9;0.8;0;1,5;6;20;6;30;AoE au sol (dégâts/ralentissement);🔵 À FAIRE;ZONE_CAVERNE_001
+ENEMY_WIND_IMP_001;Ciel;Farfadet du Vent;Mobile;95;12;2;1.8;1.1;0;1,5;7;22;1;30;Zigzag, esquives nécessaires;🔵 À FAIRE;ZONE_CIEL_001
+ENEMY_SKY_STINGER_001;Ciel;Guêpe Céleste;Assassin;85;15;1;2.0;1.2;0;1,5;8;24;4;30;Dash piqueur, dangereux;🔵 À FAIRE;ZONE_CIEL_001
+ENEMY_CLOUD_ORB_001;Ciel;Orbe Nuage;Distance;100;13;2;1.2;0.9;0;1,5;8;26;6;30;Tir en arc, pattern régulier;🔵 À FAIRE;ZONE_CIEL_001
+ENEMY_GRAV_STONE_001;Sommet;Pierre Gravité;Zone;150;18;4;1.0;0.9;0;1,5;10;32;1;30;Attaque “écrasement” (slow);🔵 À FAIRE;ZONE_SOMMET_FINAL_001
+ENEMY_ASCENDED_KNIGHT_001;Sommet;Chevalier Ascendant;Élite;180;20;5;1.3;1.1;0;1,5;12;40;4;30;Combo contact + garde partielle;🔵 À FAIRE;ZONE_SOMMET_FINAL_001
+ENEMY_LIGHTNING_TOTEM_001;Sommet;Totem Foudre;Artillerie;130;22;3;0.6;0.8;0;1,5;11;36;6;30;Frappes au sol, anti-camping;🔵 À FAIRE;ZONE_SOMMET_FINAL_001

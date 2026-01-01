@@ -1,0 +1,8 @@
+Slot;Code;Type;Visible_En_Run;Notes_UI;Asset_Attache_Type;Notes_Tech
+Épée;SWORD;Arme;Oui;Arme mêlée;SPRITE_EQUIP;Affichage sur main
+Arc;BOW;Arme;Oui;Arme distance;SPRITE_EQUIP;Affichage sur dos/main
+Hache;AXE;Arme;Oui;Arme lourde;SPRITE_EQUIP;Affichage sur main
+Bouclier;SHIELD;Défense;Oui;Main gauche;SPRITE_EQUIP;Affichage main gauche
+Armure;ARMOR;Armure;Oui;Corps;SPRITE_EQUIP;Sprite overlay
+Collier;NECKLACE;Bijou;Non;UI uniquement;ICON_UI;Pas visible en run au début
+Bracelet;BRACELET;Bijou;Non;UI uniquement;ICON_UI;Pas visible en run au début

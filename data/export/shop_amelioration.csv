@@ -1,0 +1,12 @@
+ID;Nom;Stat_cible;Type;Valeur_par_achat;Cout_base;Multiplicateur_cout;Cout_cap;Nb_achats_max;Persistant;Prerequis;Description;Statut
+SHOP_HP_001;Vie max +10;STAT_HP_MAX_001;Permanent;10;25;1.25;999999;999;OUI;Aucun;Augmente la vie max du joueur;🔵 À FAIRE
+SHOP_ATK_001;Attaque +2;STAT_ATTACK_POWER_001;Permanent;2;30;1.25;999999;999;OUI;Aucun;Augmente les dégâts infligés;🔵 À FAIRE
+SHOP_DEF_001;Défense +2;STAT_DEFENSE_001;Permanent;2;30;1.25;999999;999;OUI;Aucun;Réduit les dégâts subis;🔵 À FAIRE
+SHOP_SPEED_001;Vitesse +0.15;STAT_SPEED_001;Permanent;0.15;35;1.25;999999;999;OUI;Aucun;Augmente la vitesse d’auto-move horizontal;🔵 À FAIRE
+SHOP_ATKSPD_001;Vitesse d’attaque +1%;STAT_ATK_SPEED_001;Permanent;0,01;40;1.25;999999;999;OUI;Aucun;Augmente la cadence d’attaque (en %);🔵 À FAIRE
+SHOP_CRIT_001;Critique +0.5%;STAT_CRIT_CHANCE_001;Permanent;0,005;50;1.30;999999;60;OUI;Cap 30%;Augmente la chance de coup critique (cap conseillé 30%);🔵 À FAIRE
+SHOP_CRITDMG_001;Dégâts crit +5%;STAT_CRIT_DAMAGE_001;Permanent;0,05;60;1.30;999999;40;OUI;Aucun;Augmente le multiplicateur de dégâts critique (en %);🔵 À FAIRE
+SHOP_GOLD_001;Bonus or +5%;STAT_GOLD_001;Permanent;5;80;1.35;999999;30;OUI;Aucun;Augmente l’or gagné sur les ennemis (en %);🔵 À FAIRE
+SHOP_XP_001;Bonus XP +5%;STAT_XP_001;Permanent;5;80;1.35;999999;30;OUI;Aucun;Augmente l’XP gagnée sur les ennemis (en %);🔵 À FAIRE
+SHOP_HEALSTART_001;Soin départ +10% HP;STAT_HP_MAX_001;Permanent;10;90;1.35;999999;10;OUI;Aucun;Au début de run, démarre avec +10% HP (bonus cumulable);🔵 À FAIRE
+SHOP_LUCK_001;Chance loot +2%;STAT_GOLD_001;Permanent;2;120;1.40;999999;25;OUI;Aucun;Augmente la chance de drop bonus (si tu ajoutes des drops plus tard);🔵 À FAIRE

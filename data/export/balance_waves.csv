@@ -1,0 +1,18 @@
+ID;Zone;Vague;Enemies_Min;Enemies_Max;Elites_Min;Elites_Max;Gold_Bonus_Clear;XP_Bonus_Clear;Notes;Statut;Zone_ID
+WAVE_FORET_001;Forêt;1;2;4;0;0;0;0;Intro;🔵 À FAIRE;ZONE_FORET_001
+WAVE_FORET_005;Forêt;5;4;6;0;1;2;5;1er pic;🔵 À FAIRE;ZONE_FORET_001
+WAVE_FORET_010;Forêt;10;5;8;1;1;3;8;Checkpoint conseillé (CP_001);🔵 À FAIRE;ZONE_FORET_001
+WAVE_FORET_020;Forêt;20;7;10;1;2;5;12;Checkpoint conseillé (CP_002);🔵 À FAIRE;ZONE_FORET_001
+WAVE_FORET_030;Forêt;30;0;0;0;0;10;25;Gardien/Boss de zone;🔵 À FAIRE;ZONE_FORET_001
+WAVE_CAVERNE_001;Caverne;1;3;5;0;0;0;0;Reprise plus dure;🔵 À FAIRE;ZONE_CAVERNE_001
+WAVE_CAVERNE_010;Caverne;10;6;9;1;1;4;10;Checkpoint conseillé;🔵 À FAIRE;ZONE_CAVERNE_001
+WAVE_CAVERNE_020;Caverne;20;8;12;1;2;6;14;Checkpoint conseillé;🔵 À FAIRE;ZONE_CAVERNE_001
+WAVE_CAVERNE_030;Caverne;30;0;0;0;0;12;30;Gardien/Boss de zone;🔵 À FAIRE;ZONE_CAVERNE_001
+WAVE_CIEL_001;Ciel;1;3;6;0;0;0;0;Rythme rapide;🔵 À FAIRE;ZONE_CIEL_001
+WAVE_CIEL_010;Ciel;10;7;10;1;1;5;12;Checkpoint conseillé;🔵 À FAIRE;ZONE_CIEL_001
+WAVE_CIEL_020;Ciel;20;9;13;1;2;7;16;Checkpoint conseillé;🔵 À FAIRE;ZONE_CIEL_001
+WAVE_CIEL_030;Ciel;30;0;0;0;0;14;35;Gardien/Boss de zone;🔵 À FAIRE;ZONE_CIEL_001
+WAVE_SOMMET_001;Sommet;1;4;7;0;0;0;0;Endgame direct;🔵 À FAIRE;ZONE_SOMMET_FINAL_001
+WAVE_SOMMET_010;Sommet;10;8;12;1;1;6;14;Checkpoint conseillé;🔵 À FAIRE;ZONE_SOMMET_FINAL_001
+WAVE_SOMMET_020;Sommet;20;10;14;1;2;8;18;Checkpoint conseillé;🔵 À FAIRE;ZONE_SOMMET_FINAL_001
+WAVE_SOMMET_030;Sommet;30;0;0;0;0;16;40;Boss final / sommet;🔵 À FAIRE;ZONE_SOMMET_FINAL_001

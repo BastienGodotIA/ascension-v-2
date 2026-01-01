@@ -1,0 +1,15 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://bepxpk8ycj1su"
+valid=false
+
+[deps]
+
+source_file="res://data/export/balance_zones.csv"
+
+[params]
+
+compress=true
+delimiter=0

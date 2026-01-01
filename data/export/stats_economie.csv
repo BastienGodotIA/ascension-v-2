@@ -1,0 +1,14 @@
+ID;Nom;Type;Description;Persistant;Statut;Valeur_Base;Min;Max;Unite;Notes_Tech
+STAT_HP_MAX_001;Vie maximale;Stat;Augmente la vie max du joueur;OUI;🔵 À FAIRE;100;;;HP;
+STAT_ATTACK_POWER_001;Puissance attaque;Stat;Augmente les dégâts infligés;OUI;🔵 À FAIRE;10;;;DMG;
+STAT_DEFENSE_001;Défense;Stat;Réduit les dégâts reçus;OUI;🔵 À FAIRE;0;;;DEF;
+STAT_GOLD_001;Or;Monnaie;Monnaie utilisée pour les améliorations;OUI;🔵 À FAIRE;;;;;
+STAT_WAVE_LEVEL_001;Niveau de vague;Progression;Indique l’avancement dans la run;NON;🔵 À FAIRE;;;;;
+STAT_XP_001;XP;Progression;Expérience gagnée en tuant des ennemis (sert au leveling);OUI;🔵 À FAIRE;;;;;
+STAT_LEVEL_001;Niveau;Progression;Niveau du joueur (augmente via XP);OUI;🔵 À FAIRE;;;;;
+STAT_SPEED_001;Vitesse;Stat;vitesse d’auto-move (px/s;OUI;🔵 À FAIRE;250;;;px/s;
+STAT_ATK_SPEED_001;Vitesse d’attaque;Stat;% qui réduit le cooldown d’attaque;OUI;🔵 À FAIRE;0;;;%;
+STAT_CRIT_CHANCE_001;Coup critique;Stat;Chance de critique (%);OUI;🔵 À FAIRE;0,05;;;%;
+STAT_CRIT_DAMAGE_001;Dégâts critique;Stat;Multiplicateur critique (ex: 150%);OUI;🔵 À FAIRE;1,5;;;%;
+STAT_GOLD_GAIN_MULT_001;Bonus gain d'Or;Stat;Multiplicateur gain d'Or (%);OUI;🔵 À FAIRE;0;;;%;
+STAT_XP_GAIN_MULT_001;Bonus gain d'XP;Stat;Multiplicateur gain d'XP (%);OUI;🔵 À FAIRE;0;;;%;
