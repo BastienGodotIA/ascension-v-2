@@ -14,3 +14,14 @@ export_credentials.cfg
 .mono/
 data_*/
 mono_crash.*.json
+
+# Godot import artifacts for CSV (générés automatiquement)
+data/export/*.csv.import
+
+# Exports / builds
+export/
+build/
+dist/
+
+# Windows
+Thumbs.db
