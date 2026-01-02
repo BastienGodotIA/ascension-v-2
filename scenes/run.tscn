@@ -1,0 +1,52 @@
+[gd_scene load_steps=2 format=3 uid="uid://sut24m8rpeop"]
+
+[ext_resource type="Script" uid="uid://dqvm0v0wogjvo" path="res://scripts/ui/run.gd" id="1_2d5n6"]
+
+[node name="Run" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_2d5n6")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+text = "▶️ RUN (placeholder)"
+
+[node name="LabelInfo" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+text = "Auto-run en cours… (à venir)"
+
+[node name="Sep1" type="HSeparator" parent="Margin/VBox"]
+layout_mode = 2
+
+[node name="ButtonEndRun" type="Button" parent="Margin/VBox"]
+layout_mode = 2
+text = "🏁 Fin de run (retour HUB)"
+
+[node name="ButtonBackHub" type="Button" parent="Margin/VBox"]
+layout_mode = 2
+text = "↩️ Retour HUB"
+
+[node name="LabelTimer" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+text = "⏱️ Temps : ..."
+
+[node name="LabelRewards" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+text = "🎁 Récompenses : ..."
+
+[node name="RunTimer" type="Timer" parent="."]

@@ -38,6 +38,42 @@ layout_mode = 2
 [node name="LabelLevel" type="Label" parent="Margin/VBox/TopStats"]
 layout_mode = 2
 
+[node name="StatsBox" type="VBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="StatsTitle" type="Label" parent="Margin/VBox/StatsBox"]
+layout_mode = 2
+text = "📊 Stats"
+
+[node name="LabelHP" type="Label" parent="Margin/VBox/StatsBox"]
+layout_mode = 2
+text = "❤️ HP : ..."
+
+[node name="LabelATK" type="Label" parent="Margin/VBox/StatsBox"]
+layout_mode = 2
+text = "🗡️ ATK : ..."
+
+[node name="LabelDEF" type="Label" parent="Margin/VBox/StatsBox"]
+layout_mode = 2
+text = "🛡️ DEF : ..."
+
+[node name="LabelSPEED" type="Label" parent="Margin/VBox/StatsBox"]
+layout_mode = 2
+text = "💨 SPEED : ..."
+
+[node name="LabelATKSpeed" type="Label" parent="Margin/VBox/StatsBox"]
+layout_mode = 2
+text = "⚡ ATK SPD : ..."
+
+[node name="LabelCrit" type="Label" parent="Margin/VBox/StatsBox"]
+layout_mode = 2
+text = "🎯 CRIT : ..."
+
+[node name="LabelCritDmg" type="Label" parent="Margin/VBox/StatsBox"]
+layout_mode = 2
+text = "💥 CRIT DMG : ..."
+
 [node name="Sep1" type="HSeparator" parent="Margin/VBox"]
 layout_mode = 2
 

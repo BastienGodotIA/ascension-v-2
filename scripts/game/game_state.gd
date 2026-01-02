@@ -177,3 +177,22 @@ func try_buy_item(item_id: String) -> bool:
 
 	Log.ok("SHOP", "Achat OK 🛒", {"item_id": item_id, "gold_left": gold})
 	return true
+# -------------------------
+# 🎁 Rewards (RUN placeholder)
+# -------------------------
+func add_gold(amount: int, reason: String = "") -> void:
+	var before: int = gold
+	gold += max(0, amount)
+	Log.ok("GAME", "Gold added 💰", {"amount": amount, "before": before, "after": gold, "reason": reason})
+
+func add_xp(amount: int, reason: String = "") -> void:
+	var before: int = xp
+	xp += max(0, amount)
+	Log.ok("GAME", "XP added ✨", {"amount": amount, "before": before, "after": xp, "reason": reason})
+
+	# Placeholder leveling (simple, on fera mieux plus tard)
+	# Ici on level up tous les 100 XP pour tester l'affichage.
+	while xp >= 100:
+		xp -= 100
+		level += 1
+		Log.ok("GAME", "Level UP 🏅", {"level": level, "xp_left": xp})

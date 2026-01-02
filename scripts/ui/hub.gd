@@ -10,10 +10,18 @@
 extends Control
 
 const Log = preload("res://scripts/core/log.gd")
-
 const SCENE_SHOP := "res://scenes/shop.tscn"
+const SCENE_RUN := "res://scenes/run.tscn"
 
 # --- Top stats
+# --- Combat stats (affichage HUB)
+@onready var lbl_hp: Label = $Margin/VBox/StatsBox/LabelHP
+@onready var lbl_atk: Label = $Margin/VBox/StatsBox/LabelATK
+@onready var lbl_def: Label = $Margin/VBox/StatsBox/LabelDEF
+@onready var lbl_speed: Label = $Margin/VBox/StatsBox/LabelSPEED
+@onready var lbl_atk_speed: Label = $Margin/VBox/StatsBox/LabelATKSpeed
+@onready var lbl_crit: Label = $Margin/VBox/StatsBox/LabelCrit
+@onready var lbl_crit_dmg: Label = $Margin/VBox/StatsBox/LabelCritDmg
 @onready var lbl_gold: Label = $Margin/VBox/TopStats/LabelGold
 @onready var lbl_xp: Label = $Margin/VBox/TopStats/LabelXP
 @onready var lbl_level: Label = $Margin/VBox/TopStats/LabelLevel
@@ -65,6 +73,7 @@ func _connect_equip_popup() -> void:
 
 func _refresh_all() -> void:
 	_refresh_top_stats()
+	_refresh_combat_stats()
 	_refresh_slots()
 
 func _refresh_top_stats() -> void:
@@ -77,6 +86,38 @@ func _refresh_top_stats() -> void:
 # ---------------------------------------------------------
 # 🛡️ Slots + bouton Équiper (créé dynamiquement)
 # ---------------------------------------------------------
+func _refresh_combat_stats() -> void:
+	# 📊 On lit les stats calculées (base + bonus équipement)
+	# IDs = ceux de stats_economie.csv (source de vérité data)
+	var hp: float = Game.get_stat("STAT_HP_MAX_001")
+	var atk: float = Game.get_stat("STAT_ATTACK_POWER_001")
+	var def: float = Game.get_stat("STAT_DEFENSE_001")
+	var speed: float = Game.get_stat("STAT_SPEED_001")
+	var atk_speed: float = Game.get_stat("STAT_ATK_SPEED_001")
+	var crit_chance: float = Game.get_stat("STAT_CRIT_CHANCE_001") # ex: 0.05 -> 5%
+	var crit_dmg: float = Game.get_stat("STAT_CRIT_DAMAGE_001")     # ex: 1.5 -> x1.50
+
+	# 🧾 Mise en forme simple (phase 1 = lisible, pas “joli”)
+	lbl_hp.text = "❤️ HP : " + str(int(hp))
+	lbl_atk.text = "🗡️ ATK : " + str(int(atk))
+	lbl_def.text = "🛡️ DEF : " + str(int(def))
+	lbl_speed.text = "💨 SPEED : " + str(int(speed))
+	lbl_atk_speed.text = "⚡ ATK SPD : " + str(atk_speed)
+
+	var crit_percent: int = int(round(crit_chance * 100.0))
+	lbl_crit.text = "🎯 CRIT : " + str(crit_percent) + "%"
+	lbl_crit_dmg.text = "💥 CRIT DMG : x" + str(snappedf(crit_dmg, 0.01))
+
+	Log.d("UI", "CombatStats refresh", {
+		"hp": int(hp),
+		"atk": int(atk),
+		"def": int(def),
+		"speed": int(speed),
+		"atk_spd": atk_speed,
+		"crit%": crit_percent,
+		"crit_dmg": crit_dmg
+	})
+
 func _refresh_slots() -> void:
 	for c in slots_list.get_children():
 		c.queue_free()
@@ -144,8 +185,10 @@ func _on_shop_pressed() -> void:
 		Log.e("UI", "change_scene_to_file failed", {"scene": SCENE_SHOP, "err": err})
 
 func _on_run_pressed() -> void:
-	Log.w("GAME", "RUN placeholder (pas encore implémenté) ▶️")
-
+	Log.i("UI", "Go RUN ▶️", {"from": "HUB"})
+	var err: Error = get_tree().change_scene_to_file(SCENE_RUN)
+	if err != OK:
+		Log.e("UI", "change_scene_to_file failed", {"scene": SCENE_RUN, "err": err})
 # ---------------------------------------------------------
 # 🧩 Equip flow
 # ---------------------------------------------------------
