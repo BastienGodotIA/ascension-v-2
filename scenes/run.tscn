@@ -49,4 +49,59 @@ text = "⏱️ Temps : ..."
 layout_mode = 2
 text = "🎁 Récompenses : ..."
 
+[node name="LabelWave" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+text = "🌊 Vague : 1"
+
+[node name="LabelKills" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+text = "💀 Kills : 0"
+
+[node name="LabelRunEarnings" type="Label" parent="Margin/VBox"]
+layout_mode = 2
+text = "🎒 Run : +0 or, +0 XP"
+
 [node name="RunTimer" type="Timer" parent="."]
+
+[node name="EndPanel" type="PanelContainer" parent="."]
+visible = false
+custom_minimum_size = Vector2(520, 220)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -133.5
+offset_top = -42.5
+offset_right = 133.5
+offset_bottom = 42.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="EndMargin" type="MarginContainer" parent="EndPanel"]
+layout_mode = 2
+
+[node name="EndVBox" type="VBoxContainer" parent="EndPanel/EndMargin"]
+layout_mode = 2
+
+[node name="EndTitle" type="Label" parent="EndPanel/EndMargin/EndVBox"]
+layout_mode = 2
+text = "🏁 FIN DE RUN"
+
+[node name="EndSummary" type="Label" parent="EndPanel/EndMargin/EndVBox"]
+layout_mode = 2
+text = "..."
+
+[node name="EndButtons" type="HBoxContainer" parent="EndPanel/EndMargin/EndVBox"]
+layout_mode = 2
+
+[node name="ButtonBackHubEnd" type="Button" parent="EndPanel/EndMargin/EndVBox/EndButtons"]
+layout_mode = 2
+text = "↩️ Retour HUB"
+
+[node name="ButtonRestartRun" type="Button" parent="EndPanel/EndMargin/EndVBox/EndButtons"]
+layout_mode = 2
+text = "▶️ Refaire un RUN"
+
+[node name="KillTimer" type="Timer" parent="."]
