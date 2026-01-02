@@ -55,7 +55,8 @@ func _build_items_list() -> void:
 		if item.is_empty():
 			continue
 
-		var name: String = str(item.get("Nom", item_id))
+		var item_name: String = str(item.get("Nom", item_id))
+		
 		var rarete: String = str(item.get("Rareté", "?"))
 		var price: int = _get_item_price_or(item)
 
@@ -65,7 +66,7 @@ func _build_items_list() -> void:
 		row.add_theme_constant_override("separation", 10)
 
 		var lbl_name := Label.new()
-		lbl_name.text = name
+		lbl_name.text = item_name
 		lbl_name.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 		var lbl_rarete := Label.new()
