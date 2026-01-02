@@ -4,15 +4,20 @@
 
 [node name="HUB" type="Control"]
 layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_qssp3")
 
 [node name="Margin" type="MarginContainer" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="VBox" type="VBoxContainer" parent="Margin"]
 layout_mode = 2
@@ -42,6 +47,7 @@ text = "🧩 Équipement"
 
 [node name="ScrollSlots" type="ScrollContainer" parent="Margin/VBox"]
 layout_mode = 2
+size_flags_vertical = 3
 
 [node name="SlotsList" type="VBoxContainer" parent="Margin/VBox/ScrollSlots"]
 layout_mode = 2
@@ -59,3 +65,35 @@ text = "🛒 Boutique"
 [node name="ButtonRun" type="Button" parent="Margin/VBox/BottomButtons"]
 layout_mode = 2
 text = "▶️ Run"
+
+[node name="EquipPopup" type="PopupPanel" parent="."]
+oversampling_override = 1.0
+size = Vector2i(520, 420)
+min_size = Vector2i(520, 420)
+
+[node name="EquipMargin" type="MarginContainer" parent="EquipPopup"]
+custom_minimum_size = Vector2(0, 300)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="EquipVBox" type="VBoxContainer" parent="EquipPopup/EquipMargin"]
+layout_mode = 2
+
+[node name="EquipTitle" type="Label" parent="EquipPopup/EquipMargin/EquipVBox"]
+layout_mode = 2
+text = "🧩 Équiper"
+
+[node name="EquipItemList" type="ItemList" parent="EquipPopup/EquipMargin/EquipVBox"]
+custom_minimum_size = Vector2(0, 260)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="EquipButtons" type="HBoxContainer" parent="EquipPopup/EquipMargin/EquipVBox"]
+layout_mode = 2
+
+[node name="ButtonCancel" type="Button" parent="EquipPopup/EquipMargin/EquipVBox/EquipButtons"]
+layout_mode = 2
+text = "❌ Fermer"

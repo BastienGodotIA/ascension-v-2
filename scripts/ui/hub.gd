@@ -1,88 +1,73 @@
 # res://scripts/ui/hub.gd
 # =========================================================
-# 🏠 HUB UI (Phase 1 - fonctionnel)
+# 🏠 HUB UI (Phase 1 - fonctionnel + Equip popup)
 # ---------------------------------------------------------
-# Objectif :
-# - Afficher Or / XP / Level
-# - Lister les slots d'équipement + item équipé
-# - Bouton "🛒 Boutique" (ouvre Shop.tscn)
-# - Bouton "▶️ Run" (placeholder)
-#
-# Règles projet :
-# - ✅ commentaires partout (pédagogique)
-# - 🪵 logs emoji standard via Log.gd
-# - Pas de déco / assets (phase 2)
+# Affiche gold/xp/level
+# Affiche slots + item équipé
+# Bouton Shop / Run
+# + Equip : bouton par slot -> popup -> sélection item -> Game.equip_item()
 # =========================================================
 extends Control
 
-# ---------------------------------------------------------
-# 🪵 Logger standard (emoji + niveau + tag)
-# ---------------------------------------------------------
 const Log = preload("res://scripts/core/log.gd")
 
-# ---------------------------------------------------------
-# 📌 Chemins de scènes (transition simple)
-# ---------------------------------------------------------
-const SCENE_SHOP := "res://scenes/Shop.tscn"
-# (RUN viendra plus tard) :
-# const SCENE_RUN := "res://scenes/Run.tscn"
+const SCENE_SHOP := "res://scenes/shop.tscn"
 
-# ---------------------------------------------------------
-# 🧷 Références UI (récupérées au _ready)
-# ---------------------------------------------------------
+# --- Top stats
 @onready var lbl_gold: Label = $Margin/VBox/TopStats/LabelGold
 @onready var lbl_xp: Label = $Margin/VBox/TopStats/LabelXP
 @onready var lbl_level: Label = $Margin/VBox/TopStats/LabelLevel
 
+# --- Slots list (on remplit dynamiquement)
 @onready var slots_list: VBoxContainer = $Margin/VBox/ScrollSlots/SlotsList
 
+# --- Bottom buttons
 @onready var btn_shop: Button = $Margin/VBox/BottomButtons/ButtonShop
 @onready var btn_run: Button = $Margin/VBox/BottomButtons/ButtonRun
 
-# ---------------------------------------------------------
-# 🎬 READY
-# ---------------------------------------------------------
+# --- Equip popup
+@onready var equip_popup: PopupPanel = $EquipPopup
+@onready var equip_title: Label = $EquipPopup/EquipMargin/EquipVBox/EquipTitle
+@onready var equip_list: ItemList = $EquipPopup/EquipMargin/EquipVBox/EquipItemList
+@onready var btn_cancel: Button = $EquipPopup/EquipMargin/EquipVBox/EquipButtons/ButtonCancel
+
+var _equip_target_slot_code: String = ""
+var _equip_target_slot_name: String = ""
+
 func _ready() -> void:
-	# Log d'arrivée scène
 	Log.i("UI", "HUB ready 🏠")
 
-	# Sécurité : si les datas ne sont pas chargées, on le signale.
-	# (Normalement OK car DataScore est autoload et reload_all() au _ready)
-	if DataScore.items_by_id.size() == 0:
-		Log.w("DATA", "DataScore.items_by_id vide (import pas fait ?) ⚠️")
+	# Petit log utile : prouve que tes achats sont bien dans l'inventaire
+	Log.d("UI", "Owned items snapshot", {"count": Game.owned_items.size()})
 
-	# Connecte les boutons
 	_connect_buttons()
-
-	# Rafraîchit tout l'affichage
+	_connect_equip_popup()
 	_refresh_all()
 
-# ---------------------------------------------------------
-# 🔌 Connexions boutons
-# ---------------------------------------------------------
 func _connect_buttons() -> void:
-	# 🛒 Boutique
 	if not btn_shop.pressed.is_connected(_on_shop_pressed):
 		btn_shop.pressed.connect(_on_shop_pressed)
-
-	# ▶️ Run (placeholder)
 	if not btn_run.pressed.is_connected(_on_run_pressed):
 		btn_run.pressed.connect(_on_run_pressed)
 
 	Log.ok("UI", "Boutons connectés", {"shop": true, "run": true})
 
-# ---------------------------------------------------------
-# 🔄 Refresh global (top stats + slots)
-# ---------------------------------------------------------
+func _connect_equip_popup() -> void:
+	# Double-clic / Entrée sur une ligne => équipe
+	if not equip_list.item_activated.is_connected(_on_equip_item_activated):
+		equip_list.item_activated.connect(_on_equip_item_activated)
+
+	# Bouton fermer
+	if not btn_cancel.pressed.is_connected(_on_equip_cancel_pressed):
+		btn_cancel.pressed.connect(_on_equip_cancel_pressed)
+
+	Log.ok("UI", "Equip popup connectée", {"item_activated": true, "cancel": true})
+
 func _refresh_all() -> void:
 	_refresh_top_stats()
 	_refresh_slots()
 
-# ---------------------------------------------------------
-# 💰 / ⭐ Top stats
-# ---------------------------------------------------------
 func _refresh_top_stats() -> void:
-	# Mise à jour labels (format ultra simple)
 	lbl_gold.text = "💰 Or : " + str(Game.gold)
 	lbl_xp.text = "✨ XP : " + str(Game.xp)
 	lbl_level.text = "🏅 Level : " + str(Game.level)
@@ -90,84 +75,149 @@ func _refresh_top_stats() -> void:
 	Log.d("UI", "TopStats refresh", {"gold": Game.gold, "xp": Game.xp, "level": Game.level})
 
 # ---------------------------------------------------------
-# 🛡️ Slots d'équipement
+# 🛡️ Slots + bouton Équiper (créé dynamiquement)
 # ---------------------------------------------------------
 func _refresh_slots() -> void:
-	# Nettoyage de la liste (on reconstruit pour rester simple)
 	for c in slots_list.get_children():
 		c.queue_free()
 
-	# Si aucun slot : warning + stop
-	if DataScore.slots_rows.size() == 0:
+	# DataScore.slots_by_id = { "SWORD": {row}, "ARMOR": {row}, ... }
+	if DataScore.slots_by_id.size() == 0:
 		Log.w("DATA", "Aucun slot trouvé (equipement_slots.csv ?) ⚠️")
 		return
 
-	# Pour chaque slot (ordre CSV) : afficher "Slot (CODE)" + item équipé
-	for slot_row in DataScore.slots_rows:
-		# Récup valeurs utiles
-		var code: String = str(slot_row.get("Code", "")).strip_edges()
-		var slot_name: String = str(slot_row.get("Slot", "")).strip_edges()
+	var slot_codes: Array[String] = _get_sorted_slot_codes()
 
-		# Sécurité
-		if code == "":
-			continue
+	for code in slot_codes:
+		var slot_row: Dictionary = DataScore.slots_by_id.get(code, {})
+		var slot_name: String = str(slot_row.get("Slot", code)).strip_edges()
 
-		# ID item équipé (ou vide)
+		# Item équipé sur ce slot
 		var equipped_id: String = str(Game.equipped.get(code, "")).strip_edges()
 
-		# Nom item équipé
 		var equipped_name: String = "—"
 		if equipped_id != "":
 			var item: Dictionary = DataScore.get_item(equipped_id)
-			if item.is_empty():
-				equipped_name = "(introuvable)"
-			else:
-				equipped_name = str(item.get("Nom", equipped_id))
+			equipped_name = "(introuvable)" if item.is_empty() else str(item.get("Nom", equipped_id))
 
-		# ---- UI row ----
+		# UI row
 		var row := HBoxContainer.new()
 		row.name = "Row_" + code
 		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_theme_constant_override("separation", 12)
 
-		# Label slot
 		var lbl_slot := Label.new()
 		lbl_slot.text = "🧩 " + slot_name + " [" + code + "]"
 		lbl_slot.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
-		# Label equipped
 		var lbl_item := Label.new()
 		lbl_item.text = "🛡️ " + equipped_name
 		lbl_item.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
-		# Ajout dans la row
+		var btn_equip := Button.new()
+		btn_equip.text = "Équiper"
+		btn_equip.custom_minimum_size = Vector2(110, 0)
+		btn_equip.pressed.connect(Callable(self, "_on_equip_pressed").bind(code, slot_name))
+
 		row.add_child(lbl_slot)
 		row.add_child(lbl_item)
+		row.add_child(btn_equip)
 
-		# Ajout à la liste
 		slots_list.add_child(row)
 
-	Log.ok("UI", "Slots refresh", {"count": DataScore.slots_rows.size()})
+	Log.ok("UI", "Slots refresh", {"count": slot_codes.size()})
+
+func _get_sorted_slot_codes() -> Array[String]:
+	var arr: Array[String] = []
+	for k in DataScore.slots_by_id.keys():
+		arr.append(str(k))
+	arr.sort() # tri simple (SWORD, ARMOR, ...)
+	return arr
 
 # ---------------------------------------------------------
-# 🛒 Bouton Shop
+# 🛒 / ▶️ Buttons
 # ---------------------------------------------------------
 func _on_shop_pressed() -> void:
 	Log.i("UI", "Go Shop 🛒", {"from": "HUB"})
-
-	# Transition simple vers Shop.tscn
 	var err: Error = get_tree().change_scene_to_file(SCENE_SHOP)
 	if err != OK:
 		Log.e("UI", "change_scene_to_file failed", {"scene": SCENE_SHOP, "err": err})
 
-# ---------------------------------------------------------
-# ▶️ Bouton RUN (placeholder)
-# ---------------------------------------------------------
 func _on_run_pressed() -> void:
-	# Pas encore implémenté : on log, et on ne change pas de scène.
 	Log.w("GAME", "RUN placeholder (pas encore implémenté) ▶️")
 
-	# Future :
-	# var err: Error = get_tree().change_scene_to_file(SCENE_RUN)
-	# if err != OK:
-	# 	Log.e("GAME", "Run scene load failed", {"scene": SCENE_RUN, "err": err})
+# ---------------------------------------------------------
+# 🧩 Equip flow
+# ---------------------------------------------------------
+func _on_equip_pressed(slot_code: String, slot_name: String) -> void:
+	_equip_target_slot_code = slot_code
+	_equip_target_slot_name = slot_name
+
+	Log.i("UI", "Open Equip popup 🧩", {"slot": slot_code})
+
+	equip_title.text = "🧩 Équiper : " + slot_name + " [" + slot_code + "]"
+	_fill_equip_list(slot_code)
+
+	equip_popup.popup_centered()
+
+func _fill_equip_list(slot_code: String) -> void:
+	equip_list.clear()
+
+	# Option : déséquiper
+	equip_list.add_item("— Déséquiper (slot vide)")
+	equip_list.set_item_metadata(0, "")
+
+	var added: int = 0
+
+	for item_id in DataScore.items_by_id.keys():
+		var iid: String = str(item_id)
+
+		# On ne propose que les items possédés
+		if not Game.owns_item(iid):
+			continue
+
+		var item: Dictionary = DataScore.get_item(iid)
+		if item.is_empty():
+			continue
+
+		# Slot de l'item
+		var item_slot: String = str(item.get("Slot_Code", item.get("Slot", ""))).strip_edges()
+		if item_slot != slot_code:
+			continue
+
+		var item_name: String = str(item.get("Nom", iid))
+		var rare: String = str(item.get("Rareté", item.get("Rarete_Code", ""))).strip_edges()
+
+		var line: String = item_name
+		if rare != "":
+			line += "  [" + rare + "]"
+
+		var idx: int = equip_list.item_count
+		equip_list.add_item(line)
+		equip_list.set_item_metadata(idx, iid)
+
+		added += 1
+
+	Log.ok("UI", "Equip list filled", {"slot": slot_code, "count": added})
+
+func _on_equip_item_activated(index: int) -> void:
+	if _equip_target_slot_code == "":
+		Log.w("UI", "Equip activate sans slot cible ⚠️")
+		return
+
+	var meta: Variant = equip_list.get_item_metadata(index)
+	var item_id: String = str(meta).strip_edges()
+
+	if item_id == "":
+		Log.i("GAME", "Unequip slot", {"slot": _equip_target_slot_code})
+		Game.equip_item(_equip_target_slot_code, "")
+	else:
+		Log.i("GAME", "Equip selected", {"slot": _equip_target_slot_code, "item_id": item_id})
+		Game.equip_item(_equip_target_slot_code, item_id)
+
+	equip_popup.hide()
+	_refresh_all()
+
+func _on_equip_cancel_pressed() -> void:
+	Log.d("UI", "Equip popup cancel")
+	equip_popup.hide()
