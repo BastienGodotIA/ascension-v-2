@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://sut24m8rpeop"]
+[gd_scene load_steps=3 format=3 uid="uid://sut24m8rpeop"]
 
 [ext_resource type="Script" uid="uid://dqvm0v0wogjvo" path="res://scripts/ui/run.gd" id="1_2d5n6"]
+[ext_resource type="Script" uid="uid://blmk2iqr5lvpc" path="res://scripts/run/enemy_spawner.gd" id="2_6elw1"]
 
 [node name="Run" type="Control"]
 layout_mode = 3
@@ -40,6 +41,10 @@ text = "🏁 Fin de run (retour HUB)"
 [node name="ButtonBackHub" type="Button" parent="Margin/VBox"]
 layout_mode = 2
 text = "↩️ Retour HUB"
+
+[node name="ButtonSimKill" type="Button" parent="Margin/VBox"]
+layout_mode = 2
+text = "💀 Simuler 1 kill (debug)"
 
 [node name="LabelTimer" type="Label" parent="Margin/VBox"]
 layout_mode = 2
@@ -104,4 +109,7 @@ text = "↩️ Retour HUB"
 layout_mode = 2
 text = "▶️ Refaire un RUN"
 
-[node name="KillTimer" type="Timer" parent="."]
+[node name="EnemySpawner" type="Node" parent="."]
+script = ExtResource("2_6elw1")
+
+[node name="SpawnTimer" type="Timer" parent="EnemySpawner"]
