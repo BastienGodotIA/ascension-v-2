@@ -10,4 +10,4 @@ LVL_RULE_008;ATK SPD par niveau;0,005;FLOAT;Bonus vitesse d’attaque (pourcenta
 LVL_RULE_009;CRIT% par niveau;0,002;FLOAT;Bonus chance critique (cap conseillé plus bas);🔵 À FAIRE
 LVL_RULE_010;Cap CRIT%;0,3;FLOAT;Pour éviter le 100% crit en endgame;🔵 À FAIRE
 LVL_RULE_011;CRIT DMG base;1,5;FLOAT;CritDamage initial;🔵 À FAIRE
-LVL_RULE_012;CRIT DMG par palier;+10% / 10 niveaux;TEXT;Bonus dégâts crit toutes les 10 montées;🔵 À FAIRE
+LVL_RULE_012;CRIT DMG par palier;0,1;TEXT;Bonus dégâts +10% crit toutes les 10 niveaux;🔵 À FAIRE
