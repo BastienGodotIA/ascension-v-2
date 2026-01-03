@@ -1,8 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://sut24m8rpeop"]
+[gd_scene load_steps=3 format=3 uid="uid://sut24m8rpeop"]
 
 [ext_resource type="Script" uid="uid://dqvm0v0wogjvo" path="res://scripts/ui/run.gd" id="1_2d5n6"]
 [ext_resource type="Script" uid="uid://blmk2iqr5lvpc" path="res://scripts/combat/enemy_spawner.gd" id="2_6elw1"]
-[ext_resource type="PackedScene" uid="uid://dg8l2vr8ua71j" path="res://scenes/run/Enemy.tscn" id="3_kyqep"]
 
 [node name="Run" type="Control"]
 layout_mode = 3
@@ -116,6 +115,6 @@ text = "▶️ Refaire un RUN"
 
 [node name="EnemySpawner" type="Node" parent="World"]
 script = ExtResource("2_6elw1")
-enemy_scene = ExtResource("3_kyqep")
+spawn_visuals = true
 
 [node name="SpawnTimer" type="Timer" parent="World/EnemySpawner"]
