@@ -18,10 +18,11 @@ const SCENE_HUB: String = "res://scenes/hub.tscn"
 @onready var run_timer: Timer = get_node_or_null("RunTimer") as Timer
 
 # --- Spawner (placeholder futur)
-@onready var spawner: EnemySpawner = get_node_or_null("EnemySpawner") as EnemySpawner
+@export var spawner_path: NodePath = ^"World/EnemySpawner"
+@onready var spawner: EnemySpawner = get_node_or_null(spawner_path) as EnemySpawner
 
-# --- End screen
-@onready var end_panel: PanelContainer = get_node_or_null("EndPanel") as PanelContainer
+
+@onready var end_panel: Control = get_node_or_null("EndPanel") as Control
 @onready var end_summary: Label = get_node_or_null("EndPanel/EndMargin/EndVBox/EndSummary") as Label
 @onready var btn_back_hub_end: Button = get_node_or_null("EndPanel/EndMargin/EndVBox/EndButtons/ButtonBackHubEnd") as Button
 @onready var btn_restart_run: Button = get_node_or_null("EndPanel/EndMargin/EndVBox/EndButtons/ButtonRestartRun") as Button
@@ -124,7 +125,14 @@ func _connect_buttons() -> void:
 		Log.ok("RUN", "ButtonRestartRun connecté ✅")
 	else:
 		Log.w("RUN", "ButtonRestartRun absent ⚠️")
-
+# ✅ DEBUG: état final des connexions (à mettre TOUT EN BAS de _connect_buttons)
+		Log.d("UI", "Signal state", {
+			"simkill_connected": btn_sim_kill != null and btn_sim_kill.pressed.is_connected(_on_sim_kill_pressed),
+			"end_connected": btn_end_run != null and btn_end_run.pressed.is_connected(_on_end_run_pressed),
+			"back_connected": btn_back_hub != null and btn_back_hub.pressed.is_connected(_on_back_hub_pressed),
+			"endpanel_back_connected": btn_back_hub_end != null and btn_back_hub_end.pressed.is_connected(_on_endpanel_back_pressed),
+			"restart_connected": btn_restart_run != null and btn_restart_run.pressed.is_connected(_on_restart_pressed),
+		})
 func _setup_run_timer() -> void:
 	if run_timer == null:
 		Log.e("RUN", "RunTimer manquant ❌", {"expected": "RunTimer (Timer)"})
@@ -140,8 +148,14 @@ func _setup_run_timer() -> void:
 	Log.ok("RUN", "RunTimer prêt ✅", {"wait": run_timer.wait_time, "one_shot": run_timer.one_shot})
 
 func _setup_spawner() -> void:
+	Log.d("RUN", "Spawner resolve", {
+		"spawner_path": str(spawner_path),
+		"found": spawner != null,
+		"found_path": (spawner.get_path() if spawner != null else NodePath())
+	}) # ✅ <- CETTE LIGNE MANQUAIT (fermeture du Log.d)
+
 	if spawner == null:
-		Log.e("COMBAT", "EnemySpawner manquant ❌", {"expected": "Run/EnemySpawner"})
+		Log.e("COMBAT", "EnemySpawner manquant ❌", {"expected": "Run/World/EnemySpawner"})
 		return
 
 	# Connexion signal "enemy_killed"
@@ -268,12 +282,13 @@ func _on_enemy_killed(base_gold: int, base_xp: int, source: String, enemy_id: St
 # BUTTONS
 # ---------------------------------------------------------
 func _on_sim_kill_pressed() -> void:
-	Log.i("COMBAT", "Manual kill requested 💀", {})
+	Log.d("UI", "CLICK ✅", {"btn": "ButtonSimKill"})
 	if spawner != null:
-		spawner.simulate_manual_kill()
+		spawner.simulate_manual_kill("btn_sim_kill") # on passe une source claire
 	else:
-		# fallback : si spawner absent
+		Log.w("COMBAT", "SimKill fallback (spawner null) ⚠️")
 		_on_enemy_killed(8, 4, "manual_fallback", "MANUAL")
+
 
 func _on_end_run_pressed() -> void:
 	if _ended:
@@ -281,11 +296,12 @@ func _on_end_run_pressed() -> void:
 		return
 	Log.i("RUN", "Fin de run manuelle 🏁")
 	_end_run("manual_end")
-
+	Log.d("UI", "CLICK ✅", {"btn":"ButtonEndRun"})
+	
 func _on_back_hub_pressed() -> void:
 	Log.w("RUN", "Retour HUB debug (sans bank) ↩️")
 	_go_hub("debug_back_no_bank")
-
+	Log.d("UI", "CLICK ✅", {"btn":"ButtonBackHub"})
 # ---------------------------------------------------------
 # END / BANK
 # ---------------------------------------------------------
@@ -356,11 +372,13 @@ func _show_end_screen(reason: String) -> void:
 func _on_endpanel_back_pressed() -> void:
 	Log.i("RUN", "EndPanel -> Retour HUB 🏠")
 	_go_hub("endpanel_back")
-
+	Log.d("UI", "CLICK ✅", {"btn":"ButtonBackHubEnd"})
+	
 func _on_restart_pressed() -> void:
 	Log.i("RUN", "EndPanel -> Restart RUN ▶️")
 	_start_run()
-
+	Log.d("UI", "CLICK ✅", {"btn":"ButtonRestartRun"})
+	
 func _go_hub(reason: String) -> void:
 	Log.i("RUN", "Go HUB 🏠", {"reason": reason, "scene": SCENE_HUB})
 	var err: Error = get_tree().change_scene_to_file(SCENE_HUB)
