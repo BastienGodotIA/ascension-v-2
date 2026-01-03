@@ -1,6 +1,5 @@
 extends Control
 
-const Log = preload("res://scripts/core/log.gd")
 const SCENE_HUB: String = "res://scenes/hub.tscn"
 
 # Permet de déplacer facilement le spawner dans l’arborescence sans casser le script
@@ -408,3 +407,4 @@ func _refresh_progress_only() -> void:
 		lbl_kills.text = "💀 Kills : " + str(kills)
 	if lbl_run_earnings != null:
 		lbl_run_earnings.text = "🎒 Run : +" + str(run_gold_earned) + " or, +" + str(run_xp_earned) + " XP"
+"run" 

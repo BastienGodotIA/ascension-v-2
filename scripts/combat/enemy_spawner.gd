@@ -1,7 +1,6 @@
 extends Node
 class_name EnemySpawner
 
-const Log = preload("res://scripts/core/log.gd")
 
 signal enemy_killed(base_gold: int, base_xp: int, source: String, enemy_id: String)
 

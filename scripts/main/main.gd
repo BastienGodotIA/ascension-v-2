@@ -1,13 +1,12 @@
 extends Node
-const Log = preload("res://scripts/core/log.gd")
 
 func _ready() -> void:
 	Log.ok("MAIN", "Main chargé ✅")
 
 	# ✅ Exemples d’IDs vus dans ta console
-	print("🧪 STAT_HP_MAX_001 =", DataScore.get_stat("STAT_HP_MAX_001"))
-	print("🧪 SLOT SWORD =", DataScore.get_slot("SWORD"))
-	print("🧪 ITEM_SWORD_001 =", DataScore.get_item("ITEM_SWORD_001"))
+	Log.d("MAIN", "STAT_HP_MAX_001 = %s" % str(DataScore.get_stat("STAT_HP_MAX_001")))
+	Log.d("MAIN", "SLOT SWORD = %s" % str(DataScore.get_slot("SWORD")))
+	Log.d("MAIN", "ITEM_SWORD_001 = %s" % str(DataScore.get_item("ITEM_SWORD_001")))
 
 	# 💰 Donne un peu d’or pour tester le shop
 	Game.gold = 999

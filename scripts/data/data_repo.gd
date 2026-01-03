@@ -1,192 +1,136 @@
-# =========================================================
-# 🧠 DATA REPO (autoload)
-# ---------------------------------------------------------
-# Rôle :
-#  - Charger toutes les tables CSV dans la RAM
-#  - Fournir accès rapide par ID
-#  - Afficher des logs très clairs (emoji + détails)
-#
-# Tu l'ajoutes dans :
-#  Project Settings -> Autoload
-#  Name : DataScore (ou Data, comme tu veux)
-#  Path : res://scripts/data/data_repo.gd
-# =========================================================
 extends Node
+# =========================================================
+# 🗄️ DATA REPO (autoload = DataScore)
+# =========================================================
 
-# 📦 preloads : on évite les class_name pour éviter conflits / cache
-const CSVLoader = preload("res://scripts/data/csv_loader.gd")
-const DataSchemas = preload("res://scripts/data/data_schemas.gd")
+const LOG      = preload("res://scripts/core/log.gd")
+const CSV      = preload("res://scripts/data/csv_loader.gd")
+const SCHEMAS  = preload("res://scripts/data/data_schemas.gd")
 
-# Dossier d'export (pratique)
-const EXPORT_DIR := "res://data/export/"
+const TABLES := {
+	"Stats_Economie": {"path": "res://data/export/stats_economie.csv", "id_col": "ID"},
+	"Leveling": {"path": "res://data/export/leveling.csv", "id_col": "ID"},
+	"Equipement_Slots": {"path": "res://data/export/equipement_slots.csv", "id_col": "Code"},
+	"Items_Equipements": {"path": "res://data/export/items_equipements.csv", "id_col": "ID"},
+}
 
-# ---------------------------------------------------------
-# ✅ Tables chargées
-# ---------------------------------------------------------
-var stats_rows: Array = []
+var tables_cache: Dictionary = {}
+
+var stats_table: Dictionary = {}
+var leveling_table: Dictionary = {}
+var slots_table: Dictionary = {}
+var items_table: Dictionary = {}
+
+# ⚠️ Utilisés par d'autres scripts via DataScore.stats_by_id / slots_by_id / items_by_id
 var stats_by_id: Dictionary = {}
-
-var leveling_rows: Array = []
 var leveling_by_id: Dictionary = {}
-
-var slots_rows: Array = []
-var slots_by_id: Dictionary = {} # clé = Code (copié aussi en ID)
-
-var items_rows: Array = []
+var slots_by_id: Dictionary = {}
 var items_by_id: Dictionary = {}
 
 
-# ---------------------------------------------------------
-# 🎬 Au lancement : on charge tout
-# ---------------------------------------------------------
 func _ready() -> void:
-	print("🚀📚 [DATA] DataRepo _ready() -> reload_all()")
+	LOG.i("DATA", "🚀📚 DataRepo _ready() -> reload_all()")
 	reload_all()
 
 
-# ---------------------------------------------------------
-# 🔄 Recharger toutes les tables (pratique si tu changes un CSV)
-# ---------------------------------------------------------
 func reload_all() -> void:
-	print("🔄📦 [DATA] reload_all() --- START ---")
+	LOG.i("DATA", "🔄📦 reload_all() --- START ---")
 
-	_load_stats_economie()
-	_load_leveling()
-	_load_equipement_slots()
-	_load_items_equipements()
+	tables_cache.clear()
+	stats_table = {}
+	leveling_table = {}
+	slots_table = {}
+	items_table = {}
 
-	print("✅📦 [DATA] reload_all() --- DONE ---")
-	print("📌 [DATA] Stats_Economie:", stats_by_id.size(), "rows")
-	print("📌 [DATA] Leveling:", leveling_by_id.size(), "rows")
-	print("📌 [DATA] Equipement_Slots:", slots_by_id.size(), "rows")
-	print("📌 [DATA] Items_Equipements:", items_by_id.size(), "rows")
+	stats_by_id = {}
+	leveling_by_id = {}
+	slots_by_id = {}
+	items_by_id = {}
 
+	_load_table("Stats_Economie")
+	_load_table("Leveling")
+	_load_table("Equipement_Slots")
+	_load_table("Items_Equipements")
 
-# ---------------------------------------------------------
-# 🧭 Helper : choisir un fichier existant (cas Windows/Linux)
-# - sur Windows, la casse est tolérée
-# - sur Linux, il faut la bonne casse
-# -> on tente plusieurs noms possibles
-# ---------------------------------------------------------
-func _pick_existing(candidates: Array[String]) -> String:
-	for p in candidates:
-		if FileAccess.file_exists(p):
-			return p
-	return ""
+	LOG.ok("DATA", "✅📦 reload_all() --- DONE ---")
 
-
-# ---------------------------------------------------------
-# 📌 Charger stats_economie
-# ---------------------------------------------------------
-func _load_stats_economie() -> void:
-	var path := EXPORT_DIR + "stats_economie.csv"
-	print("🟦 [DATA] Chargement Stats_Economie ->", path)
-
-	var t: Dictionary = CSVLoader.load_table(path, ";", "ID")
-	t = CSVLoader.apply_schema(t, DataSchemas.STATS_ECONOMIE, "Stats_Economie")
-
-	stats_rows = t["rows"]
-	stats_by_id = t["by_id"]
-
-	_print_errors_if_any("Stats_Economie", t)
+	# Petit résumé (DEBUG) : visible seulement si DEBUG_TAG_ALLOWLIST contient "DATA"
+	LOG.d("DATA", "📌 Stats_Economie:%drows" % int(stats_by_id.size()))
+	LOG.d("DATA", "📌 Leveling:%drows" % int(leveling_by_id.size()))
+	LOG.d("DATA", "📌 Equipement_Slots:%drows" % int(slots_by_id.size()))
+	LOG.d("DATA", "📌 Items_Equipements:%drows" % int(items_by_id.size()))
 
 
-# ---------------------------------------------------------
-# 📌 Charger leveling
-# ---------------------------------------------------------
-func _load_leveling() -> void:
-	var path := EXPORT_DIR + "leveling.csv"
-	print("🟦 [DATA] Chargement Leveling ->", path)
-
-	var t: Dictionary = CSVLoader.load_table(path, ";", "ID")
-	t = CSVLoader.apply_schema(t, DataSchemas.LEVELING, "Leveling")
-
-	leveling_rows = t["rows"]
-	leveling_by_id = t["by_id"]
-
-	_print_errors_if_any("Leveling", t)
-
-
-# ---------------------------------------------------------
-# 📌 Charger equipement_slots (clé = Code)
-# ---------------------------------------------------------
-func _load_equipement_slots() -> void:
-	# On tente 2 noms possibles (au cas où)
-	var path := _pick_existing([
-		EXPORT_DIR + "equipement_slots.csv",
-		EXPORT_DIR + "Equipement_Slots.csv"
-	])
-
-	print("🟦 [DATA] Chargement Equipement_Slots ->", path)
-
-	if path == "":
-		push_warning("⚠️ [DATA] equipement_slots.csv introuvable dans data/export/")
-		slots_rows = []
-		slots_by_id = {}
+func _load_table(label: String) -> void:
+	if not TABLES.has(label):
+		LOG.e("DATA", "❌ Table inconnue: %s" % label)
 		return
 
-	# 🔑 id_col = "Code"
-	var t: Dictionary = CSVLoader.load_table(path, ";", "Code")
-	t = CSVLoader.apply_schema(t, DataSchemas.EQUIPEMENT_SLOTS, "Equipement_Slots")
+	var cfg: Dictionary = TABLES[label]
+	var path: String = str(cfg.get("path", ""))
+	var id_col: String = str(cfg.get("id_col", "ID"))
 
-	slots_rows = t["rows"]
-	slots_by_id = t["by_id"]
+	LOG.i("DATA", "🟦 Chargement %s ->%s" % [label, path])
 
-	_print_errors_if_any("Equipement_Slots", t)
+	var table: Dictionary = CSV.load_table(path, ";", id_col)
 
+	# Appliquer schema si présent
+	var schema: Dictionary = SCHEMAS.get_schema(label)
+	if schema.size() > 0:
+		table = CSV.apply_schema(table, schema, label)
 
-# ---------------------------------------------------------
-# 📌 Charger items_equipements (ID)
-# ---------------------------------------------------------
-func _load_items_equipements() -> void:
-	# Plusieurs noms possibles selon export
-	var path := _pick_existing([
-		EXPORT_DIR + "items_equipements.csv",
-		EXPORT_DIR + "Items_Equipements.csv"
-	])
-
-	print("🟦 [DATA] Chargement Items_Equipements ->", path)
-
-	if path == "":
-		push_warning("⚠️ [DATA] items_equipements.csv introuvable dans data/export/")
-		items_rows = []
-		items_by_id = {}
+	# Errors ?
+	var errors: Array = table.get("errors", [])
+	if errors.size() > 0:
+		LOG.w("DATA", "⚠️ %s : %d erreur(s)" % [label, errors.size()])
+		_print_errors(label, errors)
 		return
 
-	var t: Dictionary = CSVLoader.load_table(path, ";", "ID")
-	t = CSVLoader.apply_schema(t, DataSchemas.ITEMS_EQUIPEMENTS, "Items_Equipements")
+	# Cache + alias "table" / "by_id"
+	tables_cache[label] = table
 
-	items_rows = t["rows"]
-	items_by_id = t["by_id"]
+	match label:
+		"Stats_Economie":
+			stats_table = table
+			stats_by_id = table.get("by_id", {})
+		"Leveling":
+			leveling_table = table
+			leveling_by_id = table.get("by_id", {})
+		"Equipement_Slots":
+			slots_table = table
+			slots_by_id = table.get("by_id", {})
+		"Items_Equipements":
+			items_table = table
+			items_by_id = table.get("by_id", {})
+		_:
+			pass
 
-	_print_errors_if_any("Items_Equipements", t)
+	LOG.ok("DATA", "✅🟢 %s: OK" % label)
+
+
+func _print_errors(label: String, errors: Array) -> void:
+	for e in errors:
+		LOG.e("DATA", "%s | %s" % [label, str(e)])
 
 
 # ---------------------------------------------------------
-# 🧯 Afficher les erreurs (si présentes)
-# ---------------------------------------------------------
-func _print_errors_if_any(label: String, t: Dictionary) -> void:
-	var errs: Array = t.get("errors", [])
-	if errs.size() > 0:
-		push_warning("⚠️📛 [DATA] %s: %d erreur(s) (voir Output)" % [label, errs.size()])
-		for e in errs:
-			print("📛 [DATA][ERR] ", e)
-	else:
-		print("✅🟢 [DATA] %s: OK" % label)
-
-
-# ---------------------------------------------------------
-# 🔎 Helpers d'accès (pour ton futur gameplay)
+# ✅ Helpers (appelés depuis le reste du jeu via DataScore)
 # ---------------------------------------------------------
 func get_stat(id: String) -> Dictionary:
 	return stats_by_id.get(id, {})
 
+
 func get_level_rule(id: String) -> Dictionary:
 	return leveling_by_id.get(id, {})
 
+
 func get_slot(code: String) -> Dictionary:
-	# code = ex: "SLOT_WEAPON"
 	return slots_by_id.get(code, {})
+
 
 func get_item(id: String) -> Dictionary:
 	return items_by_id.get(id, {})
+
+
+func get_table(label: String) -> Dictionary:
+	return tables_cache.get(label, {})

@@ -15,7 +15,6 @@
 # =========================================================
 extends Control
 
-const Log = preload("res://scripts/core/log.gd")
 const SCENE_HUB := "res://scenes/HUB.tscn"
 
 @onready var lbl_gold: Label = $Margin/VBox/TopBar/LabelGold

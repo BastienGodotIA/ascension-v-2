@@ -12,9 +12,6 @@
 # - Plus tard on pourra gérer multiplicateurs, caps, etc.
 # =========================================================
 extends RefCounted
-
-const Log = preload("res://scripts/core/log.gd")
-
 # ---------------------------------------------------------
 # 🔧 Construit une table "base_stats" depuis DataScore.stats_by_id
 # - On ne prend que les stats qui ont une Valeur_Base non vide

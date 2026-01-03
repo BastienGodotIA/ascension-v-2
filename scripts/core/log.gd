@@ -1,82 +1,100 @@
 extends Node
 class_name Log
 
-# ===== Toggles =====
+# ---------------------------------------------------------
+# ⚙️ Réglages globaux
+# ---------------------------------------------------------
 static var DEBUG_ENABLED: bool = true
 static var INFO_ENABLED: bool = true
 static var OK_ENABLED: bool = true
 static var WARN_ENABLED: bool = true
 static var ERROR_ENABLED: bool = true
 
-# ===== Allowlists (vide = tout autoriser) =====
+# Quand true, Godot ajoute souvent une pile d'appels (plus verbeux).
+# Quand false, on garde juste une ligne propre.
+static var WARN_WITH_STACK: bool = false
+static var ERROR_WITH_STACK: bool = false
+
+# ---------------------------------------------------------
+# 🎯 Filtre par TAG (allowlist)
+# - Si la liste est vide => tout est autorisé
+# ---------------------------------------------------------
 static var DEBUG_TAG_ALLOWLIST: Array[String] = ["UI", "COMBAT"]
-static var INFO_TAG_ALLOWLIST: Array[String] = ["GAME", "RUN", "UI", "COMBAT"]
-static var OK_TAG_ALLOWLIST: Array[String] = ["GAME", "RUN", "UI", "COMBAT"]
+static var INFO_TAG_ALLOWLIST: Array[String] = ["GAME", "RUN", "UI", "COMBAT", "DATA"]
+static var OK_TAG_ALLOWLIST: Array[String] = ["GAME", "RUN", "UI", "COMBAT", "DATA"]
 static var WARN_TAG_ALLOWLIST: Array[String] = []
 static var ERROR_TAG_ALLOWLIST: Array[String] = []
 
-# Optionnel : tags toujours interdits (tous niveaux)
-static var TAG_BLOCKLIST: Array[String] = []
+# ---------------------------------------------------------
+# 🔍 Helper : filtrage
+# ---------------------------------------------------------
+static func _tag_allowed(tag: String, allowlist: Array[String]) -> bool:
+	if allowlist.size() == 0:
+		return true
+	return allowlist.has(tag)
 
-# ===== Public API =====
-static func d(tag: String, msg: String, data: Dictionary = {}) -> void:
+static func _format_ctx(ctx: Dictionary) -> String:
+	if ctx.is_empty():
+		return ""
+	var parts: Array[String] = []
+	for k in ctx.keys():
+		parts.append("%s=%s" % [str(k), str(ctx[k])])
+	return " | " + " | ".join(parts)
+
+# ---------------------------------------------------------
+# 🧪 DEBUG
+# ---------------------------------------------------------
+static func d(tag: String, msg: String, ctx: Dictionary = {}) -> void:
 	if not DEBUG_ENABLED:
 		return
 	if not _tag_allowed(tag, DEBUG_TAG_ALLOWLIST):
 		return
-	_print_line("🧪", "DEBUG", tag, msg, data)
+	print("🧪 DEBUG [%s] %s%s" % [tag, msg, _format_ctx(ctx)])
 
-static func i(tag: String, msg: String, data: Dictionary = {}) -> void:
+# ---------------------------------------------------------
+# 🚀 INFO
+# ---------------------------------------------------------
+static func i(tag: String, msg: String, ctx: Dictionary = {}) -> void:
 	if not INFO_ENABLED:
 		return
 	if not _tag_allowed(tag, INFO_TAG_ALLOWLIST):
 		return
-	_print_line("🚀", "INFO", tag, msg, data)
+	print("🚀 INFO [%s] %s%s" % [tag, msg, _format_ctx(ctx)])
 
-static func ok(tag: String, msg: String, data: Dictionary = {}) -> void:
+# ---------------------------------------------------------
+# ✅ OK
+# ---------------------------------------------------------
+static func ok(tag: String, msg: String, ctx: Dictionary = {}) -> void:
 	if not OK_ENABLED:
 		return
 	if not _tag_allowed(tag, OK_TAG_ALLOWLIST):
 		return
-	_print_line("✅", "OK", tag, msg, data)
+	print("✅ OK [%s] %s%s" % [tag, msg, _format_ctx(ctx)])
 
-static func w(tag: String, msg: String, data: Dictionary = {}) -> void:
+# ---------------------------------------------------------
+# ⚠️ WARN
+# ---------------------------------------------------------
+static func w(tag: String, msg: String, ctx: Dictionary = {}) -> void:
 	if not WARN_ENABLED:
 		return
 	if not _tag_allowed(tag, WARN_TAG_ALLOWLIST):
 		return
-	var line := _format("⚠️", "WARN", tag, msg, data)
-	push_warning(line)
-	print(line)
+	var line := "⚠️ WARN [%s] %s%s" % [tag, msg, _format_ctx(ctx)]
+	if WARN_WITH_STACK:
+		push_warning(line)
+	else:
+		print(line)
 
-static func e(tag: String, msg: String, data: Dictionary = {}) -> void:
+# ---------------------------------------------------------
+# ❌ ERROR
+# ---------------------------------------------------------
+static func e(tag: String, msg: String, ctx: Dictionary = {}) -> void:
 	if not ERROR_ENABLED:
 		return
 	if not _tag_allowed(tag, ERROR_TAG_ALLOWLIST):
 		return
-	var line := _format("🛑", "ERROR", tag, msg, data)
-	push_error(line)
-	print(line)
-
-# ===== Internals =====
-static func _tag_allowed(tag: String, allow: Array[String]) -> bool:
-	if TAG_BLOCKLIST.has(tag):
-		return false
-	return allow.is_empty() or allow.has(tag)
-
-static func _format(prefix_emoji: String, level: String, tag: String, msg: String, data: Dictionary) -> String:
-	var kv := _fmt_kv(data)
-	return "%s %s [%s] %s%s" % [prefix_emoji, level, tag, msg, kv]
-
-static func _print_line(prefix_emoji: String, level: String, tag: String, msg: String, data: Dictionary) -> void:
-	print(_format(prefix_emoji, level, tag, msg, data))
-
-static func _fmt_kv(data: Dictionary) -> String:
-	if data.is_empty():
-		return ""
-	var keys := data.keys()
-	keys.sort_custom(func(a, b): return str(a) < str(b))
-	var parts: Array[String] = []
-	for k in keys:
-		parts.append("%s=%s" % [str(k), str(data[k])])
-	return " | " + " | ".join(parts)
+	var line := "❌ ERROR [%s] %s%s" % [tag, msg, _format_ctx(ctx)]
+	if ERROR_WITH_STACK:
+		push_error(line)
+	else:
+		print(line)

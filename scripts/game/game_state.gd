@@ -9,7 +9,6 @@
 # =========================================================
 extends Node
 
-const Log = preload("res://scripts/core/log.gd")
 const StatsRuntime = preload("res://scripts/game/stats_runtime.gd")
 
 # 💰 Currencies / progression

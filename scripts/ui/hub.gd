@@ -9,7 +9,6 @@
 # =========================================================
 extends Control
 
-const Log = preload("res://scripts/core/log.gd")
 const SCENE_SHOP := "res://scenes/shop.tscn"
 const SCENE_RUN := "res://scenes/run.tscn"
 

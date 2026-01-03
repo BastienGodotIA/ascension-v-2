@@ -1,7 +1,6 @@
 extends Area2D
 class_name Enemy
 
-const Log = preload("res://scripts/core/log.gd")
 
 signal request_kill(base_gold: int, base_xp: int, source: String, enemy_id: String)
 
