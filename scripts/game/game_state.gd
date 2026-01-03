@@ -1,12 +1,4 @@
 # res://scripts/game/game_state.gd
-# =========================================================
-# 🧠 GameState.gd (Autoload)
-# ---------------------------------------------------------
-# Rôle :
-# - Stocke l'état du jeu (or/xp/level/inventaire/équipement)
-# - Ne touche JAMAIS à l'UI (pas de NodePath $Margin/... ici)
-# - Fournit des fonctions : try_buy_item(), equip_item(), etc.
-# =========================================================
 extends Node
 
 const StatsRuntime = preload("res://scripts/game/stats_runtime.gd")
@@ -176,6 +168,7 @@ func try_buy_item(item_id: String) -> bool:
 
 	Log.ok("SHOP", "Achat OK 🛒", {"item_id": item_id, "gold_left": gold})
 	return true
+
 # -------------------------
 # 🎁 Rewards (RUN placeholder)
 # -------------------------
@@ -190,7 +183,6 @@ func add_xp(amount: int, reason: String = "") -> void:
 	Log.ok("GAME", "XP added ✨", {"amount": amount, "before": before, "after": xp, "reason": reason})
 
 	# Placeholder leveling (simple, on fera mieux plus tard)
-	# Ici on level up tous les 100 XP pour tester l'affichage.
 	while xp >= 100:
 		xp -= 100
 		level += 1
