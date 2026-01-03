@@ -1,66 +1,82 @@
-# res://scripts/core/log.gd
-# =========================================================
-# 🪵 Log.gd - Logger projet Ascension
-# ---------------------------------------------------------
-# Objectif :
-# - Standardiser les prints (emoji + niveau + tag + kv)
-# - Pouvoir réduire/augmenter le niveau de debug
-# =========================================================
-extends RefCounted
+extends Node
+class_name Log
 
-# 🔧 Active/désactive certains niveaux (à ton goût)
-const ENABLE_DEBUG := true
-const ENABLE_TRACE := false
+# ===== Toggles =====
+static var DEBUG_ENABLED: bool = true
+static var INFO_ENABLED: bool = true
+static var OK_ENABLED: bool = true
+static var WARN_ENABLED: bool = true
+static var ERROR_ENABLED: bool = true
 
-# ---------------------------------------------------------
-# 🔧 Format standard :
-# "<emoji> <NIVEAU> [TAG] Message | k=v | k=v"
-# ---------------------------------------------------------
-static func _fmt(tag: String, msg: String, kv: Dictionary) -> String:
+# ===== Allowlists (vide = tout autoriser) =====
+static var DEBUG_TAG_ALLOWLIST: Array[String] = ["UI", "COMBAT"]
+static var INFO_TAG_ALLOWLIST: Array[String] = ["GAME", "RUN", "UI", "COMBAT"]
+static var OK_TAG_ALLOWLIST: Array[String] = ["GAME", "RUN", "UI", "COMBAT"]
+static var WARN_TAG_ALLOWLIST: Array[String] = []
+static var ERROR_TAG_ALLOWLIST: Array[String] = []
+
+# Optionnel : tags toujours interdits (tous niveaux)
+static var TAG_BLOCKLIST: Array[String] = []
+
+# ===== Public API =====
+static func d(tag: String, msg: String, data: Dictionary = {}) -> void:
+	if not DEBUG_ENABLED:
+		return
+	if not _tag_allowed(tag, DEBUG_TAG_ALLOWLIST):
+		return
+	_print_line("🧪", "DEBUG", tag, msg, data)
+
+static func i(tag: String, msg: String, data: Dictionary = {}) -> void:
+	if not INFO_ENABLED:
+		return
+	if not _tag_allowed(tag, INFO_TAG_ALLOWLIST):
+		return
+	_print_line("🚀", "INFO", tag, msg, data)
+
+static func ok(tag: String, msg: String, data: Dictionary = {}) -> void:
+	if not OK_ENABLED:
+		return
+	if not _tag_allowed(tag, OK_TAG_ALLOWLIST):
+		return
+	_print_line("✅", "OK", tag, msg, data)
+
+static func w(tag: String, msg: String, data: Dictionary = {}) -> void:
+	if not WARN_ENABLED:
+		return
+	if not _tag_allowed(tag, WARN_TAG_ALLOWLIST):
+		return
+	var line := _format("⚠️", "WARN", tag, msg, data)
+	push_warning(line)
+	print(line)
+
+static func e(tag: String, msg: String, data: Dictionary = {}) -> void:
+	if not ERROR_ENABLED:
+		return
+	if not _tag_allowed(tag, ERROR_TAG_ALLOWLIST):
+		return
+	var line := _format("🛑", "ERROR", tag, msg, data)
+	push_error(line)
+	print(line)
+
+# ===== Internals =====
+static func _tag_allowed(tag: String, allow: Array[String]) -> bool:
+	if TAG_BLOCKLIST.has(tag):
+		return false
+	return allow.is_empty() or allow.has(tag)
+
+static func _format(prefix_emoji: String, level: String, tag: String, msg: String, data: Dictionary) -> String:
+	var kv := _fmt_kv(data)
+	return "%s %s [%s] %s%s" % [prefix_emoji, level, tag, msg, kv]
+
+static func _print_line(prefix_emoji: String, level: String, tag: String, msg: String, data: Dictionary) -> void:
+	print(_format(prefix_emoji, level, tag, msg, data))
+
+static func _fmt_kv(data: Dictionary) -> String:
+	if data.is_empty():
+		return ""
+	var keys := data.keys()
+	keys.sort_custom(func(a, b): return str(a) < str(b))
 	var parts: Array[String] = []
-	for k in kv.keys():
-		parts.append("%s=%s" % [str(k), str(kv[k])])
-
-	var suffix := ""
-	if parts.size() > 0:
-		suffix = " | " + " | ".join(parts)
-
-	return "[%s] %s%s" % [tag, msg, suffix]
-
-# ---------------------------------------------------------
-# 🚀 INFO
-# ---------------------------------------------------------
-static func i(tag: String, msg: String, kv: Dictionary = {}) -> void:
-	print("🚀 INFO " + _fmt(tag, msg, kv))
-
-# ---------------------------------------------------------
-# ✅ OK
-# ---------------------------------------------------------
-static func ok(tag: String, msg: String, kv: Dictionary = {}) -> void:
-	print("✅ OK " + _fmt(tag, msg, kv))
-
-# ---------------------------------------------------------
-# ⚠️ WARN
-# ---------------------------------------------------------
-static func w(tag: String, msg: String, kv: Dictionary = {}) -> void:
-	push_warning("⚠️ WARN " + _fmt(tag, msg, kv))
-
-# ---------------------------------------------------------
-# ❌ ERR
-# ---------------------------------------------------------
-static func e(tag: String, msg: String, kv: Dictionary = {}) -> void:
-	push_error("❌ ERR " + _fmt(tag, msg, kv))
-
-# ---------------------------------------------------------
-# 🧪 DEBUG (limitable)
-# ---------------------------------------------------------
-static func d(tag: String, msg: String, kv: Dictionary = {}) -> void:
-	if ENABLE_DEBUG:
-		print("🧪 DEBUG " + _fmt(tag, msg, kv))
-
-# ---------------------------------------------------------
-# 🔎 TRACE (ultra verbeux)
-# ---------------------------------------------------------
-static func t(tag: String, msg: String, kv: Dictionary = {}) -> void:
-	if ENABLE_TRACE:
-		print("🔎 TRACE " + _fmt(tag, msg, kv))
+	for k in keys:
+		parts.append("%s=%s" % [str(k), str(data[k])])
+	return " | " + " | ".join(parts)

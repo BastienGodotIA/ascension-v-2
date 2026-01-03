@@ -3,6 +3,9 @@ extends Control
 const Log = preload("res://scripts/core/log.gd")
 const SCENE_HUB: String = "res://scenes/hub.tscn"
 
+# Permet de déplacer facilement le spawner dans l’arborescence sans casser le script
+@export var spawner_path: NodePath = NodePath("World/EnemySpawner")
+
 # --- UI (RUN)
 @onready var lbl_timer: Label = get_node_or_null("Margin/VBox/LabelTimer") as Label
 @onready var lbl_rewards: Label = get_node_or_null("Margin/VBox/LabelRewards") as Label
@@ -17,18 +20,17 @@ const SCENE_HUB: String = "res://scenes/hub.tscn"
 # --- Timer run
 @onready var run_timer: Timer = get_node_or_null("RunTimer") as Timer
 
-# --- Spawner (placeholder futur)
-@export var spawner_path: NodePath = ^"World/EnemySpawner"
+# --- Spawner
 @onready var spawner: EnemySpawner = get_node_or_null(spawner_path) as EnemySpawner
 
-
-@onready var end_panel: Control = get_node_or_null("EndPanel") as Control
+# --- End screen
+@onready var end_panel: PanelContainer = get_node_or_null("EndPanel") as PanelContainer
 @onready var end_summary: Label = get_node_or_null("EndPanel/EndMargin/EndVBox/EndSummary") as Label
 @onready var btn_back_hub_end: Button = get_node_or_null("EndPanel/EndMargin/EndVBox/EndButtons/ButtonBackHubEnd") as Button
 @onready var btn_restart_run: Button = get_node_or_null("EndPanel/EndMargin/EndVBox/EndButtons/ButtonRestartRun") as Button
 
 # =========================================================
-# CONFIG RUN (placeholder)
+# CONFIG RUN
 # =========================================================
 var run_duration_sec: int = 12
 var kills_per_wave: int = 5
@@ -57,7 +59,7 @@ var _ended: bool = false
 var _bank_applied: bool = false
 
 func _ready() -> void:
-	Log.i("RUN", "Run ready ▶️ (v1.6 spawner+manual kill event)")
+	Log.i("RUN", "Run ready ▶️ (v1.8)")
 
 	Log.d("RUN", "Nodes check", {
 		"lbl_timer": lbl_timer != null,
@@ -70,6 +72,7 @@ func _ready() -> void:
 		"btn_back": btn_back_hub != null,
 		"run_timer": run_timer != null,
 		"spawner": spawner != null,
+		"spawner_path": str(spawner_path),
 		"end_panel": end_panel != null,
 		"end_summary": end_summary != null,
 		"end_back": btn_back_hub_end != null,
@@ -79,6 +82,7 @@ func _ready() -> void:
 	_connect_buttons()
 	_setup_run_timer()
 	_setup_spawner()
+	_log_signal_state()
 
 	if end_panel != null:
 		end_panel.visible = false
@@ -125,14 +129,7 @@ func _connect_buttons() -> void:
 		Log.ok("RUN", "ButtonRestartRun connecté ✅")
 	else:
 		Log.w("RUN", "ButtonRestartRun absent ⚠️")
-# ✅ DEBUG: état final des connexions (à mettre TOUT EN BAS de _connect_buttons)
-		Log.d("UI", "Signal state", {
-			"simkill_connected": btn_sim_kill != null and btn_sim_kill.pressed.is_connected(_on_sim_kill_pressed),
-			"end_connected": btn_end_run != null and btn_end_run.pressed.is_connected(_on_end_run_pressed),
-			"back_connected": btn_back_hub != null and btn_back_hub.pressed.is_connected(_on_back_hub_pressed),
-			"endpanel_back_connected": btn_back_hub_end != null and btn_back_hub_end.pressed.is_connected(_on_endpanel_back_pressed),
-			"restart_connected": btn_restart_run != null and btn_restart_run.pressed.is_connected(_on_restart_pressed),
-		})
+
 func _setup_run_timer() -> void:
 	if run_timer == null:
 		Log.e("RUN", "RunTimer manquant ❌", {"expected": "RunTimer (Timer)"})
@@ -148,14 +145,8 @@ func _setup_run_timer() -> void:
 	Log.ok("RUN", "RunTimer prêt ✅", {"wait": run_timer.wait_time, "one_shot": run_timer.one_shot})
 
 func _setup_spawner() -> void:
-	Log.d("RUN", "Spawner resolve", {
-		"spawner_path": str(spawner_path),
-		"found": spawner != null,
-		"found_path": (spawner.get_path() if spawner != null else NodePath())
-	}) # ✅ <- CETTE LIGNE MANQUAIT (fermeture du Log.d)
-
 	if spawner == null:
-		Log.e("COMBAT", "EnemySpawner manquant ❌", {"expected": "Run/World/EnemySpawner"})
+		Log.e("COMBAT", "EnemySpawner manquant ❌", {"expected": str(spawner_path)})
 		return
 
 	# Connexion signal "enemy_killed"
@@ -165,7 +156,17 @@ func _setup_spawner() -> void:
 	Log.ok("COMBAT", "Spawner connecté ✅", {
 		"spawn_every_sec": spawner.spawn_every_sec,
 		"base_gold": spawner.base_gold,
-		"base_xp": spawner.base_xp
+		"base_xp": spawner.base_xp,
+		"spawn_visuals": spawner.spawn_visuals
+	})
+
+func _log_signal_state() -> void:
+	Log.d("UI", "Signal state", {
+		"simkill_connected": btn_sim_kill != null and btn_sim_kill.pressed.is_connected(_on_sim_kill_pressed),
+		"end_connected": btn_end_run != null and btn_end_run.pressed.is_connected(_on_end_run_pressed),
+		"back_connected": btn_back_hub != null and btn_back_hub.pressed.is_connected(_on_back_hub_pressed),
+		"end_back_connected": btn_back_hub_end != null and btn_back_hub_end.pressed.is_connected(_on_endpanel_back_pressed),
+		"restart_connected": btn_restart_run != null and btn_restart_run.pressed.is_connected(_on_restart_pressed),
 	})
 
 # ---------------------------------------------------------
@@ -226,7 +227,7 @@ func _on_run_tick() -> void:
 		_end_run("timer_end")
 
 # ---------------------------------------------------------
-# ENEMY KILL EVENT (coeur v1.6)
+# ENEMY KILL EVENT
 # ---------------------------------------------------------
 func _on_enemy_killed(base_gold: int, base_xp: int, source: String, enemy_id: String) -> void:
 	if _ended:
@@ -247,7 +248,7 @@ func _on_enemy_killed(base_gold: int, base_xp: int, source: String, enemy_id: St
 	var gold_mult: float = 1.0 + max(0.0, gold_mult_bonus)
 	var xp_mult: float = 1.0 + max(0.0, xp_mult_bonus)
 
-	# 4) scaling placeholder par wave (simple)
+	# 4) scaling simple par wave
 	var raw_gold: float = float(base_gold + (wave_level * 2))
 	var raw_xp: float = float(base_xp + wave_level)
 
@@ -259,7 +260,6 @@ func _on_enemy_killed(base_gold: int, base_xp: int, source: String, enemy_id: St
 
 	_refresh_progress_only()
 
-	# Logs max (INFO) : chaque kill important pour debug
 	Log.i("COMBAT", "Enemy killed 💥", {
 		"enemy_id": enemy_id,
 		"src": source,
@@ -283,25 +283,27 @@ func _on_enemy_killed(base_gold: int, base_xp: int, source: String, enemy_id: St
 # ---------------------------------------------------------
 func _on_sim_kill_pressed() -> void:
 	Log.d("UI", "CLICK ✅", {"btn": "ButtonSimKill"})
+	Log.i("COMBAT", "Manual kill requested 💀", {"source": "btn_sim_kill"})
+
 	if spawner != null:
-		spawner.simulate_manual_kill("btn_sim_kill") # on passe une source claire
+		# ✅ ICI : on passe une source claire (corrige ton erreur “Too many arguments”)
+		spawner.simulate_manual_kill("btn_sim_kill")
 	else:
-		Log.w("COMBAT", "SimKill fallback (spawner null) ⚠️")
 		_on_enemy_killed(8, 4, "manual_fallback", "MANUAL")
 
-
 func _on_end_run_pressed() -> void:
+	Log.d("UI", "CLICK ✅", {"btn": "ButtonEndRun"})
 	if _ended:
 		Log.w("RUN", "EndRun press ignoré (déjà fini) ⚠️")
 		return
 	Log.i("RUN", "Fin de run manuelle 🏁")
 	_end_run("manual_end")
-	Log.d("UI", "CLICK ✅", {"btn":"ButtonEndRun"})
-	
+
 func _on_back_hub_pressed() -> void:
+	Log.d("UI", "CLICK ✅", {"btn": "ButtonBackHub"})
 	Log.w("RUN", "Retour HUB debug (sans bank) ↩️")
 	_go_hub("debug_back_no_bank")
-	Log.d("UI", "CLICK ✅", {"btn":"ButtonBackHub"})
+
 # ---------------------------------------------------------
 # END / BANK
 # ---------------------------------------------------------
@@ -370,15 +372,15 @@ func _show_end_screen(reason: String) -> void:
 	end_panel.visible = true
 
 func _on_endpanel_back_pressed() -> void:
+	Log.d("UI", "CLICK ✅", {"btn": "ButtonBackHubEnd"})
 	Log.i("RUN", "EndPanel -> Retour HUB 🏠")
 	_go_hub("endpanel_back")
-	Log.d("UI", "CLICK ✅", {"btn":"ButtonBackHubEnd"})
-	
+
 func _on_restart_pressed() -> void:
+	Log.d("UI", "CLICK ✅", {"btn": "ButtonRestartRun"})
 	Log.i("RUN", "EndPanel -> Restart RUN ▶️")
 	_start_run()
-	Log.d("UI", "CLICK ✅", {"btn":"ButtonRestartRun"})
-	
+
 func _go_hub(reason: String) -> void:
 	Log.i("RUN", "Go HUB 🏠", {"reason": reason, "scene": SCENE_HUB})
 	var err: Error = get_tree().change_scene_to_file(SCENE_HUB)
@@ -393,7 +395,7 @@ func _refresh_ui_full() -> void:
 	_refresh_progress_only()
 
 	if lbl_rewards != null:
-		lbl_rewards.text = "👾 Spawner auto + 💀 bouton debug | Bank fin + bonus vague"
+		lbl_rewards.text = "👾 Spawner auto | 💀 bouton debug | Bank fin + bonus vague"
 
 func _refresh_timer_only() -> void:
 	if lbl_timer != null:
