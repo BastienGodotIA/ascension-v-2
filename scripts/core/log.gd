@@ -19,7 +19,7 @@ static var ERROR_WITH_STACK: bool = false
 # 🎯 Filtre par TAG (allowlist)
 # - Si la liste est vide => tout est autorisé
 # ---------------------------------------------------------
-static var DEBUG_TAG_ALLOWLIST: Array[String] = ["UI", "COMBAT"]
+static var DEBUG_TAG_ALLOWLIST: Array[String] = ["STATS"]
 static var INFO_TAG_ALLOWLIST: Array[String] = ["GAME", "RUN", "UI", "COMBAT", "DATA"]
 static var OK_TAG_ALLOWLIST: Array[String] = ["GAME", "RUN", "UI", "COMBAT", "DATA"]
 static var WARN_TAG_ALLOWLIST: Array[String] = []
